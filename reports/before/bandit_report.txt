@@ -1,11 +1,11 @@
-Run started:2026-11-19 14:33:59.018704+00:00
+Run started:2026-11-19 14:41:44.038784+00:00
 
 Test results:
 >> Issue: [B110:try_except_pass] Try, Except, Pass detected.
    Severity: Low   Confidence: High
    CWE: CWE-703 (https://cwe.mitre.org/data/definitions/703.html)
    More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b110_try_except_pass.html
-   Location: .\hospital_patient_system.py:24:4
+   Location: .\reports\before\hospital_patient_system.py:24:4
 23	        patient_records[p_id]["is_admitted"] = False
 24	    except:
 25	        pass
@@ -16,7 +16,7 @@ Test results:
    Severity: Medium   Confidence: High
    CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
    More Info: https://bandit.readthedocs.io/en/1.9.4/blacklists/blacklist_calls.html#b307-eval
-   Location: .\hospital_patient_system.py:40:12
+   Location: .\reports\before\hospital_patient_system.py:40:12
 39	    base_bill = patient_records[p_id]["bill"]
 40	    total = eval(formula_expr)
 41	    return total
@@ -26,7 +26,7 @@ Test results:
    Severity: High   Confidence: High
    CWE: CWE-327 (https://cwe.mitre.org/data/definitions/327.html)
    More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b324_hashlib.html
-   Location: .\hospital_patient_system.py:45:11
+   Location: .\reports\before\hospital_patient_system.py:45:11
 44	def generate_patient_hash(p_id):
 45	    return hashlib.md5(p_id.encode()).hexdigest()
 46	
@@ -36,7 +36,7 @@ Test results:
    Severity: Low   Confidence: High
    CWE: CWE-330 (https://cwe.mitre.org/data/definitions/330.html)
    More Info: https://bandit.readthedocs.io/en/1.9.4/blacklists/blacklist_calls.html#b311-random
-   Location: .\hospital_patient_system.py:49:11
+   Location: .\reports\before\hospital_patient_system.py:49:11
 48	def generate_ward_token():
 49	    return random.randint(1000, 9999)
 50	
@@ -46,7 +46,7 @@ Test results:
    Severity: High   Confidence: High
    CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
    More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b605_start_process_with_a_shell.html
-   Location: .\hospital_patient_system.py:56:4
+   Location: .\reports\before\hospital_patient_system.py:56:4
 55	    f.close()
 56	    os.system("echo Patient ledger exported to: " + filename)
 57	

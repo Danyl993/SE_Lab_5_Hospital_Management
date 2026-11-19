@@ -9,9 +9,17 @@ from pathlib import Path
 from typing import Any
 
 PATIENT_RECORDS: dict[str, dict[str, Any]] = {
-    "P101": {"name": "John Doe", "ward": "ICU", "is_admitted": True, "bill": 2400.0},
-    "P102": {"name": "Jane Smith", "ward": "General", "is_admitted": False, "bill": 450.0},
-    "P103": {"name": "Robert Brown", "ward": "Private", "is_admitted": True, "bill": 1200.0},
+    "P101": {
+        "name": "John Doe", "ward": "ICU", "is_admitted": True, "bill": 2400.0
+    },
+    "P102": {
+        "name": "Jane Smith", "ward": "General", "is_admitted": False,
+        "bill": 450.0,
+    },
+    "P103": {
+        "name": "Robert Brown", "ward": "Private", "is_admitted": True,
+        "bill": 1200.0,
+    },
 }
 
 
@@ -48,7 +56,7 @@ def verify_admission_status(patient_id: str) -> bool:
 
 
 def _evaluate_cost_expression(node: ast.AST, base_bill: float) -> float:
-    """Evaluate a numeric expression using only base_bill and basic arithmetic."""
+    """Evaluate numeric expressions with base_bill and basic operators only."""
     operations = {
         ast.Add: operator.add,
         ast.Sub: operator.sub,
@@ -106,7 +114,8 @@ def main() -> None:
     admit_patient("P104", "Alice Walker", "General")
     discharge_patient("P101")
     print("Is P103 admitted:", verify_admission_status("P103"))
-    print("Cost calculated:", calculate_treatment_cost("P103", "base_bill * 1.12"))
+    treatment_cost = calculate_treatment_cost("P103", "base_bill * 1.12")
+    print("Cost calculated:", treatment_cost)
     print("Patient Hash:", generate_patient_hash("P103"))
     print("Ward Token:", generate_ward_token())
     export_patient_ledger()
