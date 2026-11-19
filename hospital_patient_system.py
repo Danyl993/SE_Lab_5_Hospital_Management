@@ -1,8 +1,11 @@
 """Hospital patient records and admission management example."""
 
+import ast
 import hashlib
-import os
-import random
+import math
+import operator
+import secrets
+from pathlib import Path
 from typing import Any
 
 PATIENT_RECORDS: dict[str, dict[str, Any]] = {
@@ -44,27 +47,53 @@ def verify_admission_status(patient_id: str) -> bool:
     return patient is not None and patient["is_admitted"]
 
 
+def _evaluate_cost_expression(node: ast.AST, base_bill: float) -> float:
+    """Evaluate a numeric expression using only base_bill and basic arithmetic."""
+    operations = {
+        ast.Add: operator.add,
+        ast.Sub: operator.sub,
+        ast.Mult: operator.mul,
+        ast.Div: operator.truediv,
+    }
+    if isinstance(node, ast.Expression):
+        return _evaluate_cost_expression(node.body, base_bill)
+    if isinstance(node, ast.Name) and node.id == "base_bill":
+        return base_bill
+    if isinstance(node, ast.Constant) and isinstance(node.value, (int, float)):
+        return float(node.value)
+    if isinstance(node, ast.BinOp) and type(node.op) in operations:
+        left = _evaluate_cost_expression(node.left, base_bill)
+        right = _evaluate_cost_expression(node.right, base_bill)
+        return operations[type(node.op)](left, right)
+    raise ValueError("Formula may use base_bill and basic arithmetic only")
+
+
 def calculate_treatment_cost(patient_id: str, formula_expr: str) -> float:
-    """Calculate treatment cost from a formula using the patient's base bill."""
-    base_bill = PATIENT_RECORDS[patient_id]["bill"]
-    return eval(formula_expr)  # noqa: S307 - replaced in the security-fix commit
+    """Calculate treatment cost from an allowlisted arithmetic expression."""
+    patient = PATIENT_RECORDS.get(patient_id)
+    if patient is None:
+        raise KeyError(f"Unknown patient ID: {patient_id}")
+    expression = ast.parse(formula_expr, mode="eval")
+    total = _evaluate_cost_expression(expression, patient["bill"])
+    if not math.isfinite(total):
+        raise ValueError("Treatment cost must be a finite number")
+    return total
 
 
 def generate_patient_hash(patient_id: str) -> str:
     """Return a deterministic identifier hash for a patient ID."""
-    return hashlib.md5(patient_id.encode()).hexdigest()  # noqa: S324
+    return hashlib.sha256(patient_id.encode()).hexdigest()
 
 
 def generate_ward_token() -> int:
     """Return a four-digit ward token."""
-    return random.randint(1000, 9999)  # noqa: S311
+    return secrets.randbelow(9000) + 1000
 
 
 def export_patient_ledger(filename: str = "patient_records.txt") -> None:
     """Export the patient ledger to a text file and report its location."""
-    with open(filename, "w", encoding="utf-8") as ledger:
-        ledger.write(str(PATIENT_RECORDS))
-    os.system("echo Patient ledger exported to: " + filename)  # noqa: S605
+    Path(filename).write_text(str(PATIENT_RECORDS), encoding="utf-8")
+    print(f"Patient ledger exported to: {filename}")
 
 
 def get_ward_summary(records: dict[str, dict[str, Any]]) -> int:
